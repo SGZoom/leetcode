@@ -2,11 +2,12 @@ package com.gzoom.leetcode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
         Main main = new Main();
-        main.test_reverseBetween();
+        main.test_numDecodings();
     }
 
     public class ListNode {
@@ -99,5 +100,54 @@ public class Main {
             System.out.println(node1.val);
             node1 = node1.next;
         }
+    }
+
+    /**
+     * 解码方法 https://leetcode-cn.com/problems/decode-ways/
+     *
+     * 给定一个只包含数字的非空字符串，请计算解码方法的总数。
+     *
+     * 还是切割方式的演变，用迭代吧；总个数是当前解法的下顺
+     *
+     * 存在0 的情况，0不能单独匹配；
+     * 最初的深度遍历超时了
+     * */
+    public int numDecodings(String s) {
+        if (s.isEmpty()) {
+            return 0;
+        }
+        if (s.startsWith("0")) {
+            return 0;
+        }
+        if (s.length() == 1) {
+            return 1;
+        }
+
+        int result = 1;
+        result = result*muplitDecode(s.substring(1));
+        if (Integer.valueOf(s.substring(0, 2)) < 27) {
+            result += muplitDecode(s.substring(2));
+        }
+        return result;
+    }
+
+    private int muplitDecode(String source) {
+        if (source.isEmpty() || (source.length() == 1 && !source.equals("0"))) {
+            return 1;
+        }
+        if (source.startsWith("0")) {
+            return 0;
+        }
+        int result = 1;
+        result = result * muplitDecode(source.substring(1));
+        if (Integer.valueOf(source.substring(0, 2)) < 27) {
+            result += muplitDecode(source.substring(2));
+        }
+        return result;
+    }
+
+    public void test_numDecodings() {
+        int val = numDecodings("1787897759966261825913315262377298132516969578441236833255596967132573482281598412163216914566534565");
+        System.out.println(val);
     }
 }
