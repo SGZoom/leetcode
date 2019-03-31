@@ -1,12 +1,14 @@
 package com.gzoom.leetcode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Main {
     public static void main(String[] args) {
         Main main = new Main();
-        main.test_numDecodings();
+        main.test_subsetsWithDup();
     }
 
     public class ListNode {
@@ -154,7 +156,7 @@ public class Main {
      * dp[i-1] 可取 条件是 s[i-1] != 0 这里i-1具有迷惑性，因为我们的dp是超出一位的，所以是指本来这一位
      *      本来这一位不为0那么可以单独切分，不影响前面的切分，所以可以继承上一个dp
      * dp[i-2] 可取 条件是 上一位加上遍历这一位可以单独成二位数，符合要求（0<x<27）
-     * 
+     *
      * 我发现自己在边界值的取值上很容易迷糊
      *
      */
@@ -197,5 +199,105 @@ public class Main {
             }
         }
         return dp[s.length()];
+    }
+
+    /**
+     * 子集 II https://leetcode-cn.com/problems/subsets-ii/
+     * 一开始的思路就错了，子集不需要连续，所以不是通过链表
+     *  我的想法是通过动态规划，f[i] = f[i-1] + f[i-1] add i
+     *  f[i]表示i个数字的时候的结果集
+     * */
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> values = new ArrayList<>();
+        if (nums.length == 0) {
+            return result;
+        }
+        result.add(new ArrayList<>());
+        if (nums.length == 1) {
+            List<Integer> add = new ArrayList<>();
+            add.add(nums[0]);
+            result.add(add);
+            return result;
+        }
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length; i++) {
+            int value = nums[i];
+            List<Integer> list = new ArrayList<>();
+            list.add(nums[i]);
+            if (!values.contains(nums[i])) {
+                values.add(value);
+                List<Integer> add = new ArrayList<>(list);
+                result.add(add);
+            }
+            for(int j = i+1;j<nums.length;j++) {
+                value = value *10 + nums[j];
+                if(!values.contains(value)) {
+                    values.add(value);
+                    list.add(nums[j]);
+                    List<Integer> add = new ArrayList<>(list);
+                    result.add(add);
+                }
+
+            }
+        }
+        return result;
+    }
+    /**
+     * 一开始用普通的ArrayList会报错：java.util.ConcurrentModificationException，在遍历的时候
+     * 在遍历的时候不能操作List,所以应该单独陵出来
+     *
+     * 还是出现重复的情况，需要想方法去除
+     *
+     * 最终通过，匹配的时候还是太麻烦了
+     * */
+    public List<List<Integer>> subsetsWithDup_v2(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (nums.length == 0) {
+            return result;
+        }
+        Arrays.sort(nums);
+        List<String> values = new ArrayList<>();
+        result.add(new ArrayList<>());
+        for(int i = 0;i<nums.length;i++) {
+            List<List<Integer>> newList = new ArrayList<>();
+            boolean quitSame = false;
+            if (i >= 1 && nums[i] == nums[i - 1]) {
+                quitSame = true;
+            }
+            for(List<Integer> list : result) {
+                //如果只有0个和只有1个，那么就没必要加了
+                if ((list.isEmpty() || (list.size() == 1 && list.get(0) != nums[i])) && quitSame) {
+                    continue;
+                }
+                List<Integer> newOne = new ArrayList<>(list);
+                newOne.add(nums[i]);
+                if (!caculateListIn(newOne, values)) {
+                    newList.add(newOne);
+                }
+            }
+            result.addAll(newList);
+        }
+        return result;
+    }
+    /**
+     * 妈的有0还有负数，采用字符串匹配试试？
+     * */
+    private boolean caculateListIn(List<Integer> list, List<String> contain) {
+        StringBuilder value = new StringBuilder();
+        //这里是为了计算出0
+        for (int a : list) {
+            value.append(a);
+        }
+        String result = value.toString();
+        if (contain.contains(result)) {
+            return true;
+        }
+        contain.add(result);
+        return false;
+    }
+
+    public void test_subsetsWithDup() {
+        System.out.println(subsetsWithDup_v2(new int[]{-1,1,2}));
     }
 }
