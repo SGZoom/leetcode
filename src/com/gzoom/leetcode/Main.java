@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Main {
     public static void main(String[] args) {
         Main main = new Main();
-        main.test_subsetsWithDup();
+        main.test_canJump();
     }
 
     public class ListNode {
@@ -299,5 +299,84 @@ public class Main {
 
     public void test_subsetsWithDup() {
         System.out.println(subsetsWithDup_v2(new int[]{-1,1,2}));
+    }
+
+    /**
+     * 跳跃游戏 https://leetcode-cn.com/problems/jump-game/
+     *  给定各个地方的最大距离，看能否跳到最后一个
+     *
+     *  我在想能往前跳吗？不然最后一个为什么要赋值
+     *
+     *  想到的法子：从0开始，收集能跳到的地方，作为一个列表，然后深度遍历下去
+     *  复杂度最差是n^2
+     *  第一版失败，时间超时;尝试缩减，失败
+     *
+     * */
+    public boolean canJump(int[] nums) {
+        if (nums.length == 0) {
+            return false;
+        }
+        if (nums.length == 1) {
+            return true;
+        }
+        int target = nums.length - 1;
+        List<Integer> list = new ArrayList<>();
+        if (nums[0] == 0) {
+            return false;
+        }
+        if (nums[0] >= target) {
+            return true;
+        }
+        for (int i = 1; i <= nums[0]; i++) {
+            list.add(i);
+        }
+        while (!list.isEmpty()) {
+            int index = list.get(0);
+            if (index > target) {
+                list.remove(0);
+                break;
+            }
+            if (index == target) {
+                return true;
+            }
+            for (int i = 1; i <= nums[index]; i++) {
+                int val = index + i;
+                if (val >= target) {
+                    return true;
+                }
+                if (!list.contains(val)) {
+                    list.add(val);
+                }
+            }
+            list.remove(0);
+        }
+        return false;
+    }
+
+    /**
+     * 按照我昨天的思路
+     *
+     * 通过！！！！！！
+     * */
+    public boolean canJump_v2(int[] nums) {
+        int index = 0;
+        //从后往前数
+        for (int i = nums.length - 1; i >= 0; i--) {
+            if (nums[i] >= index) {
+                index = 1;
+            } else {
+                index++;
+            }
+        }
+        if (index == 1) {
+            return true;
+        }
+        return false;
+    }
+
+    public void test_canJump() {
+        int test[] = new int[]{
+                3,2,1,0,4};
+        System.out.println(canJump_v2(test));
     }
 }
