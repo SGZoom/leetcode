@@ -1,14 +1,14 @@
 package com.gzoom.leetcode;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.omg.PortableInterceptor.INACTIVE;
+
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Main {
     public static void main(String[] args) {
         Main main = new Main();
-        main.test_subsetsWithDup();
+        main.test_merge();
     }
 
     public class ListNode {
@@ -299,5 +299,172 @@ public class Main {
 
     public void test_subsetsWithDup() {
         System.out.println(subsetsWithDup_v2(new int[]{-1,1,2}));
+    }
+
+    /**
+     *  最小路径和 https://leetcode-cn.com/problems/minimum-path-sum/
+     *  这不就是地杰斯特拉算法吗= =
+     * */
+    public int minPathSum(int[][] grid) {
+        int row = grid.length;
+        int vol = grid[0].length;
+        int dp[][] = new int[row][vol];
+        int hang = 0;
+        for (int i = 0; i < vol; i++) {
+            dp[0][i] = hang + grid[0][i];
+            hang = dp[0][i];
+        }
+        int lie = 0;
+        for (int j = 0; j < row; j++) {
+            dp[j][0] = lie + grid[j][0];
+            lie = dp[j][0];
+        }
+
+        for (int i = 1; i < row; i++) {
+            for (int j = 1; j < vol; j++) {
+                dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j];
+            }
+        }
+
+//        for(int i = 0;i<row;i++) {
+//            for(int j=0;j<vol;j++) {
+//                System.out.print(dp[i][j] + " ");
+//            }
+//            System.out.println();
+//        }
+
+        return dp[row - 1][vol - 1];
+    }
+
+    public void test_minPathSum() {
+        int[][] grid = new int[][]{{1,3,1},{1,5,1},{4,2,1}};
+        minPathSum(grid);
+
+    }
+
+
+    /**
+     * 不同路径 https://leetcode-cn.com/problems/unique-paths/
+     *
+     * 秒过，都不用怎么改的
+     * */
+
+    public int uniquePaths(int m, int n) {
+        int row = m;
+        int vol = n;
+        int dp[][] = new int[row][vol];
+        for (int i = 0; i < vol; i++) {
+            dp[0][i] = 1;
+        }
+        for (int j = 0; j < row; j++) {
+            dp[j][0] = 1;
+        }
+
+        for (int i = 1; i < row; i++) {
+            for (int j = 1; j < vol; j++) {
+                dp[i][j] = dp[i-1][j] + dp[i][j-1];
+            }
+        }
+
+//        for(int i = 0;i<row;i++) {
+//            for(int j=0;j<vol;j++) {
+//                System.out.print(dp[i][j] + " ");
+//            }
+//            System.out.println();
+//        }
+
+        return dp[row - 1][vol - 1];
+    }
+
+
+    public class Interval {
+        int start;
+        int end;
+
+        Interval() {
+            start = 0;
+            end = 0;
+        }
+
+        Interval(int s, int e) {
+            start = s;
+            end = e;
+        }
+    }
+
+    public void test_merge() {
+        Interval a1 = new Interval();
+        a1.start = 1;
+        a1.end = 3;
+        Interval a2 = new Interval();
+        a2.start = 2;
+        a2.end = 4;
+        List<Interval> intervals = new ArrayList<>();
+        intervals.add(a1);
+        intervals.add(a2);
+        intervals = merge(intervals);
+        for(Interval interval : intervals) {
+            System.out.println("["+interval.start+","+interval.end+"]");
+        }
+    }
+
+    /**
+     * https://leetcode-cn.com/problems/merge-intervals/
+     * 合并区间
+     * */
+    public List<Interval> merge(List<Interval> intervals) {
+        if (intervals.isEmpty() || intervals.size() == 1) {
+            return intervals;
+        }
+        //先排序
+        Collections.sort(intervals, new Comparator<Interval>() {
+            @Override
+            public int compare(Interval o1, Interval o2) {
+                if (o1.start < o2.start) {
+                    return -1;
+                } else if (o1.start > o2.start) {
+                    return 1;
+                } else if (o1.end < o2.end) {
+                    return -1;
+                } else if (o1.end > o2.end) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+        Interval last = intervals.get(0);
+
+        Iterator<Interval> iterator = intervals.iterator();
+        List<Interval> intervalList = new ArrayList<>();
+        iterator.next();
+        while (iterator.hasNext()) {
+            Interval per = iterator.next();
+            if (canBindOne(per, last)) {
+                last = bindOne(per,last);
+                iterator.remove();
+            }else {
+                intervalList.add(last);
+                last = per;
+            }
+        }
+        intervalList.add(last);
+
+
+        return intervalList;
+    }
+
+    private Interval bindOne(Interval per, Interval last) {
+        per.start = per.start < last.start ? per.start : last.start;
+        per.end = per.end > last.end ? per.end : last.end;
+        return per;
+    }
+
+    private boolean canBindOne(Interval per, Interval last) {
+        //不可合并的情况
+        if (per.end < last.start || last.end < per.start) {
+            return false;
+        }
+        return true;
     }
 }
