@@ -302,7 +302,7 @@ public class Main {
     }
 
     /**
-<<<<<<< HEAD
+     <<<<<<< HEAD
      *  最小路径和 https://leetcode-cn.com/problems/minimum-path-sum/
      *  这不就是地杰斯特拉算法吗= =
      * */
@@ -553,7 +553,10 @@ public class Main {
      * 第k个排列  https://leetcode-cn.com/problems/permutation-sequence/
      *
      * 逻辑有点乱，比如[2,2]，有点麻烦
-     * 
+     * 通过-卡住的点在于index的确定
+     * 因为我们数数的时候是1开始，但是datas定位是从0开始
+     * 打个比方，1,2,3分别去除以2，答案是0,1,1
+     * 但是2的时候还是停留在上一个答案，所以我们需要将被除数减一
      * */
     public String getPermutation(int n, int k) {
         //每一位每一位找，然后维护一个链表，在链表中慢慢取
@@ -564,13 +567,11 @@ public class Main {
         }
         for (int i = 0; i < n-1; i++) {
             int result = getCircleIndex(n - 1 - i);
-            int index = k / (result);
-            if (k <= 1) {
+            //这个index比较麻烦，因为
+            int index = (k-1)/ result;
+            if (index < 0) {
                 index = 0;
-            }
-            if(index > datas.size() -1) {
-                index = (datas.size() - 1) % index;
-            }else {
+            } else if (index >= datas.size()) {
                 index = index % (datas.size() - 1);
             }
             stringBuilder.append(datas.get(index));
@@ -583,7 +584,14 @@ public class Main {
     }
 
     public void test_getPermutation() {
+        System.out.println(getPermutation(3, 3));
+        //[3,3] w:123 t:213
         System.out.println(getPermutation(3, 2));
+        //[3,2] w:213 t:132
+        System.out.println(getPermutation(2, 2));
+        //[2,2] w:12 t:21
+        System.out.println(getPermutation(3, 4));
+        //[3,4] w:132 t:231
     }
 
     private Map<Integer, Integer> mJieMap = new HashMap<>();
