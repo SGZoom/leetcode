@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Main {
     public static void main(String[] args) {
         Main main = new Main();
-        main.test_merge();
+        main.test_getPermutation();
     }
 
     public class ListNode {
@@ -547,5 +547,56 @@ public class Main {
         for(Interval interval : intervals) {
             System.out.println("["+interval.start+","+interval.end+"]");
         }
+    }
+
+    /**
+     * 第k个排列  https://leetcode-cn.com/problems/permutation-sequence/
+     *
+     * 逻辑有点乱，比如[2,2]，有点麻烦
+     * 
+     * */
+    public String getPermutation(int n, int k) {
+        //每一位每一位找，然后维护一个链表，在链表中慢慢取
+        StringBuilder stringBuilder = new StringBuilder("");
+        List<Integer> datas = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            datas.add(i + 1);
+        }
+        for (int i = 0; i < n-1; i++) {
+            int result = getCircleIndex(n - 1 - i);
+            int index = k / (result);
+            if (k <= 1) {
+                index = 0;
+            }
+            if(index > datas.size() -1) {
+                index = (datas.size() - 1) % index;
+            }else {
+                index = index % (datas.size() - 1);
+            }
+            stringBuilder.append(datas.get(index));
+            datas.remove(index);
+            k = k - (result) * index;
+        }
+        stringBuilder.append(datas.get(0));
+
+        return stringBuilder.toString();
+    }
+
+    public void test_getPermutation() {
+        System.out.println(getPermutation(3, 2));
+    }
+
+    private Map<Integer, Integer> mJieMap = new HashMap<>();
+
+    private int getCircleIndex(int n) {
+        if (mJieMap.containsKey(n)) {
+            return mJieMap.get(n);
+        }
+        int result = 1;
+        for (int i = 2; i <= n; i++) {
+            result = result * i;
+        }
+        mJieMap.put(n, result);
+        return result;
     }
 }
