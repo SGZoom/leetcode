@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Main {
     public static void main(String[] args) {
         Main main = new Main();
-        main.test_getPermutation();
+        main.test_uniquePathsWithObstacles();
     }
 
     public class ListNode {
@@ -608,13 +608,76 @@ public class Main {
         return result;
     }
 
+//
+//    /**
+//     * 字母异位词分组 https://leetcode-cn.com/problems/group-anagrams/
+//     *
+//     *
+//     * */
+//    public List<List<String>> groupAnagrams(String[] strs) {
+//
+//    }
 
     /**
-     * 字母异位词分组 https://leetcode-cn.com/problems/group-anagrams/
-     *
-     *
-     * */
-    public List<List<String>> groupAnagrams(String[] strs) {
+     不同路径 II:https://leetcode-cn.com/problems/unique-paths-ii/submissions/
+     一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为“Start” ）。
 
+     机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。
+
+     现在考虑网格中有障碍物。那么从左上角到右下角将会有多少条不同的路径？
+     网格中的障碍物和空位置分别用 1 和 0 来表示。
+
+     说明：m 和 n 的值均不超过 100。
+
+     想使用深度遍历，函数每次返回该节点能够到达终点的分支数目
+
+     出现错误：
+     1、终点值不对，不应该是i==length，而是length-1
+     2、不是很懂，终点起点一起的时候为0/因为为1
+     3、超时了，尝试使用hashMap?成功
+     * */
+
+
+    HashMap<String,Integer> map = new HashMap<>();
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        int length = obstacleGrid[0].length;
+        int deep = obstacleGrid.length;
+        if (deep == 1 && deep == 1 && obstacleGrid[0][0] == 1) {
+            return 0;
+        }
+        if (obstacleGrid[deep - 1][length - 1] == 1) {
+            return 0;
+        }
+        int result = handleRoute(obstacleGrid, deep, length, 0, 0, 0);
+        return result;
     }
+
+    private int handleRoute(int[][] obstacleGrid, int length, int deep, int i, int k, int count) {
+        if (i == length-1 && k == deep-1) {
+            return 1;
+        }
+
+        if (obstacleGrid[i][k] == 1) {
+            return 0;
+        }
+        String key = i+","+k;
+        if (map.containsKey(key)) {
+            return map.get(key);
+        }
+        int add = 0;
+        if (i + 1 < length) {
+            add += handleRoute(obstacleGrid, length, deep, i + 1, k, count);
+        }
+        if (k + 1 < deep) {
+            add += handleRoute(obstacleGrid, length, deep, i, k + 1, count);
+        }
+        map.put(key,add);
+        return add;
+    }
+
+    public void  test_uniquePathsWithObstacles() {
+        int[][] data = new int[][]{{0,0,0},{0,1,0},{0,0,0}};
+        System.out.println(uniquePathsWithObstacles(data));
+    }
+
 }
