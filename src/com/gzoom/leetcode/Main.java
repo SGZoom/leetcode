@@ -680,4 +680,114 @@ public class Main {
         System.out.println(uniquePathsWithObstacles(data));
     }
 
+    /**
+     给定一个包含红色、白色和蓝色，一共 n 个元素的数组，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+
+     此题中，我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
+
+     注意:
+     不能使用代码库中的排序函数来解决这道题。
+     * */
+    public void sortColors(int[] nums) {
+        List<Integer> indexOfOne = new ArrayList<>();
+        List<Integer> indexOfTwo = new ArrayList<>();
+        List<Integer> indexOfZero = new ArrayList<>();
+        int length = nums.length;
+        for (int i = 0; i < length; i++) {
+            if (nums[i] == 2) {
+                indexOfTwo.add(i);
+            }else if(nums[i] == 1) {
+                //看一下前面有没有2
+                if(!indexOfTwo.isEmpty() && indexOfTwo.get(0) < i) {
+                    int tmpIndex = indexOfTwo.get(0);
+                    nums[tmpIndex] = 1;
+                    nums[i] = 2;
+                    indexOfTwo.remove(0);
+                    indexOfTwo.add(i);
+                    indexOfOne.add(tmpIndex);
+                } else {
+                    indexOfOne.add(i);
+                }
+            } else {
+                if(!indexOfOne.isEmpty() && indexOfOne.get(0) < i) {
+                    int tmpIndex = indexOfOne.get(0);
+                    nums[tmpIndex] = 0;
+                    nums[i] = 1;
+                    indexOfOne.remove(0);
+                    indexOfOne.add(tmpIndex);
+                }else if(!indexOfTwo.isEmpty() && indexOfTwo.get(0) < i) {
+                    int tmpIndex = indexOfTwo.get(0);
+                    nums[tmpIndex] = 0;
+                    nums[i] = 2;
+                    indexOfTwo.remove(0);
+                    indexOfTwo.add(i);
+                }
+            }
+        }
+    }
+
+    /**
+     * 这是最简单的一个思路，还有一种，评论区指出：遇到0移动到头部，遇到2移到尾部
+     *
+     * 但是考虑到我们这是数组，可能移位反而麻烦
+     * */
+    public void sortColors2(int[] nums) {
+        int numZero = 0;
+        int numOne = 0;
+        int numTwo = 0;
+        int length = nums.length;
+        for (int i = 0; i < length; i++) {
+            if (nums[i] == 2) {
+                numTwo ++;
+            }else if(nums[i] == 1) {
+                //看一下前面有没有2
+                numOne ++;
+            } else {
+                numZero ++;
+            }
+        }
+        int i = 0;
+        for(i = 0;i<numZero;i++) {
+            nums[i] = 0;
+        }
+        for(;i<numOne;i++) {
+            nums[i] = 1;
+        }
+        for(;i<numTwo;i++) {
+            nums[i] = 2;
+        }
+    }
+
+    /**
+     组合:https://leetcode-cn.com/problems/combinations/
+     给定两个整数 n 和 k，返回 1 ... n 中所有可能的 k 个数的组合。
+
+     熟悉的递归
+     这里有个小坑，组合应该排重，[1,2]和[2,1]应该相同
+     * */
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (n < k || k == 0) {
+            return result;
+        }
+        int[] flag = new int[n];
+        combineEach(n, k, 0, flag, 0, new ArrayList<Integer>(), result);
+        return result;
+    }
+
+    private void combineEach(int n, int k, int count, int[] flag, int index, List<Integer> list, List<List<Integer>> result) {
+        if (count == k) {
+            result.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = index; i < n; i++) {
+            if (flag[i] != 1) {
+                flag[i] = 1;
+                List<Integer> listNew = new ArrayList<>(list);
+                listNew.add(i + 1);
+                combineEach(n, k, count + 1, flag, i, listNew, result);
+                flag[i] = 0;
+            }
+        }
+    }
 }
