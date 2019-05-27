@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Main {
     public static void main(String[] args) {
         Main main = new Main();
-        main.test_uniquePathsWithObstacles();
+        main.test_removeDuplicates();
     }
 
     public class ListNode {
@@ -790,4 +790,297 @@ public class Main {
             }
         }
     }
+
+    /**
+     子集:https://leetcode-cn.com/problems/subsets/
+
+     给定一组不含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+
+     说明：解集不能包含重复的子集
+     还是迭代吧，没有想到特别好的，这个比较方便的地方在于不含重复元素
+
+     还是按照元素个数划分
+
+     过了，效率还行
+     start是没用的，一开始造成了干扰
+     * */
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        result.add(new ArrayList<>());
+        int length = nums.length;
+        for (int i = 1; i <= length; i++) {
+            subsetsPer(nums, 0, length, 0, result, new ArrayList<>(), i, 0);
+        }
+        return result;
+    }
+
+    private void subsetsPer(int[] nums, int start, int end, int index, List<List<Integer>> result, List<Integer> list, int count, int currentCount) {
+        if (currentCount == count) {
+            List<Integer> add = new ArrayList<Integer>(list);
+//            add.add(nums[index]);
+            result.add(add);
+            return;
+        }
+        //已经不可能完成了
+        if (end - index < (count - currentCount)) {
+            return;
+        }
+        for (int i = index; i < end; i++) {
+            List<Integer> each = new ArrayList<>(list);
+            each.add(nums[i]);
+            subsetsPer(nums, start, end, i + 1, result, each, count, currentCount + 1);
+        }
+    }
+
+    /**
+     单词搜索：https://leetcode-cn.com/problems/word-search/
+     给定一个二维网格和一个单词，找出该单词是否存在于网格中。
+
+     单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+
+     看到这个题，我就想到动态规划
+     我想到的方法是从[0,0]往[x,y]遍历，每次找到起点都作为一个开始
+     然后开始遍历周边，看能不能走到结尾
+
+     1、超时了，递归超时
+     2、有一处文字游戏：同一个单元格内的字母不允许被重复使用，但是可以被间接使用，也就是跳转一次然后就变质
+     String key = i + " " + k + " " + indexOfString;
+     if (helpMap.containsKey(key)) {
+     return helpMap.get(key);
+     }
+     这个地方导致的，因为我是根据当前第几步、在哪里来保存解法的，这样不保险，因为步数一样走法可能不一样
+
+     好奇怪啊，同样的代码，一开始过不了因为超时，后面就过了？？
+
+     * */
+    HashMap<String,Boolean> helpMap = new HashMap<>();
+    public boolean exist(char[][] board, String word) {
+        int deep = board.length;
+        int width = board[0].length;
+        if (deep == 0 && width == 0) {
+            return false;
+        }
+        if (word.length() > width * deep) {
+            return false;
+        }
+        for (int i = 0; i < deep; i++) {
+            for (int k = 0; k < width; k++) {
+                if (board[i][k] == word.charAt(0)) {
+                    board[i][k] = '1';
+                    boolean result = findStringInMap(i, k, deep, width, word, 1, board);
+                    if (result) {
+                        return true;
+                    }
+                    board[i][k]= word.charAt(0);
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean findStringInMap(int i, int k, int deep, int width, String word, int indexOfString, char[][] board) {
+        if (indexOfString >= word.length()) {
+            return true;
+        }
+        String key = i + " " + k + " " + indexOfString;
+//        if (helpMap.containsKey(key)) {
+//            return helpMap.get(key);
+//        }
+        //开始在四周寻找能够够到的
+        char target = word.charAt(indexOfString);
+        boolean result = false;
+        if (i - 1 > -1 && board[i - 1][k] == target) {
+            board[i-1][k] = '1';
+            result = result || findStringInMap(i - 1, k, deep, width, word, indexOfString + 1, board);
+            board[i-1][k] = target;
+        }
+        if (i + 1 < deep && board[i + 1][k] == target) {
+            board[i+1][k] = '1';
+            result = result || findStringInMap(i + 1, k, deep, width, word, indexOfString + 1, board);
+            board[i+1][k] = target;
+        }
+        if (k - 1 > -1 && board[i][k - 1] == target ) {
+            board[i][k-1] = '1';
+            result = result || findStringInMap(i, k - 1, deep, width, word, indexOfString + 1, board);
+            board[i][k-1] = target;
+        }
+        if (k + 1 < width && board[i][k + 1] == target ) {
+            board[i][k+1] = '1';
+            result = result || findStringInMap(i, k + 1, deep, width, word, indexOfString + 1, board);
+            board[i][k+1] = target;
+        }
+//        helpMap.put(key, result);
+        return result;
+    }
+
+    public void test_exist() {
+        char[][] data = new char[][]{{'A','B','C','E'},{'S','F','E','S'},{'A','D','E','E'}};
+        System.out.println(exist(data,"ABCESEEEFS"));
+    }
+
+    /**
+     * 忘了这是哪道题了，找数组中第k大的数字，排序应该要自己写的
+     * */
+    public int findKthLargest(int[] nums, int k) {
+        Arrays.sort(nums);
+        return nums[nums.length  - k];
+    }
+
+    /**
+     删除排序数组中的重复项 II:https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array-ii/
+     给定一个排序数组，你需要在原地删除重复出现的元素，使得每个元素最多出现两次，返回移除后数组的新长度。
+
+     不要使用额外的数组空间，你必须在原地修改输入数组并在使用 O(1) 额外空间的条件下完成。
+
+     感觉亦或是一个方法，但是不知道如何具体操作
+     还是试试排序？
+     打扰了，已经排序了
+
+     移位的时候注意，可能要一次性多移几位，不然不好遍历
+     * */
+    public int removeDuplicates(int[] nums) {
+        if (nums == null || nums.length <= 0) {
+            return 0;
+        }
+        int remove = 0;
+        int count = 1;
+        for(int i = 0;i<nums.length-1;i++) {
+            if (nums[i] == nums[i+1]) {
+                if (count < 2) {
+                    count++;
+                } else {
+                    //到这里的时候要删掉后面所有跟这个相同的数字，然后返回删除的个数
+                    remove += putNumsFrom(i+1, nums);
+                    count = 1;
+                }
+            } else {
+                count = 1;
+            }
+        }
+        return nums.length - remove;
+    }
+
+    /**移动的时候要找到下一个不相同的数字
+     * @param from 开始移动的位置
+     *
+     * */
+    private int putNumsFrom(int from, int[] nums) {
+        int index = -1;
+        for (int i = from + 1; i < nums.length - 1; i++) {
+            if (nums[i] != nums[from]) {
+                index = i;
+                break;
+            }
+        }
+        //如果后面的数都跟from相同，那就没有移动的必要，直接放回删减长度即可
+        if (index == -1) {
+            return nums.length - from;
+        }
+        int remove = index - from;
+        for (int i = from; i < nums.length - remove; i++) {
+            nums[i] = nums[i + remove];
+        }
+        return remove;
+    }
+
+    public void test_removeDuplicates() {
+//        int[] data = new int[]{1, 1, 1, 2, 2, 3};
+        int[] data = new int[]{-50,-50,-49,-48,-47,-47,-47,-46,-45,-43,-42,-41,-40,-40,-40,-40,-40,-40,-39,-38,-38,-38,-38,-37,-36,-35,-34,-34,-34,-33,-32,-31,-30,-28,-27,-26,-26,-26,-25,-25,-24,-24,-24,-22,-22,-21,-21,-21,-21,-21,-20,-19,-18,-18,-18,-17,-17,-17,-17,-17,-16,-16,-15,-14,-14,-14,-13,-13,-12,-12,-10,-10,-9,-8,-8,-7,-7,-6,-5,-4,-4,-4,-3,-1,1,2,2,3,4,5,6,6,7,8,8,9,9,10,10,10,11,11,12,12,13,13,13,14,14,14,15,16,17,17,18,20,21,22,22,22,23,23,25,26,28,29,29,29,30,31,31,32,33,34,34,34,36,36,37,37,38,38,38,39,40,40,40,41,42,42,43,43,44,44,45,45,45,46,47,47,47,47,48,49,49,49,50};
+        int result = removeDuplicates(data);
+        for (int i = 0; i < result; i++) {
+            System.out.print(data[i] + "  ");
+        }
+    }
+
+    /**
+     卧槽被一个超简单的代码打败了
+     * */
+    public int removeDuplicates_true(int[] nums) {
+        int i = 0;
+        for (int n : nums) {
+            //前两个正确排列
+            if (i < 2 || n > nums[i - 2]) {
+                nums[i++] = n;
+            }
+        }
+        return i;
+    }
+
+    /**
+     搜索旋转排序数组 II :https://leetcode-cn.com/problems/search-in-rotated-sorted-array-ii/
+     假设按照升序排序的数组在预先未知的某个点上进行了旋转。
+
+     ( 例如，数组 [0,0,1,2,2,5,6] 可能变为 [2,5,6,0,0,1,2] )。
+
+     编写一个函数来判断给定的目标值是否存在于数组中。若存在返回 true，否则返回 false。
+
+    好像没有复杂度的要求？
+
+     怎么写都能过的，网上都用的二分查找
+
+     * */
+    public boolean search(int[] nums, int target) {
+        int length = nums.length;
+        for (int i = 0; i < length; i++) {
+            if (target == nums[i]) {
+                return true;
+            }
+            if (i > 0 && i < length - 1) {
+                int pre = nums[i-1];
+                int next = nums[i+1];
+                //说明到分界线了
+                if (pre > next) {
+                    if (target > nums[i - 1] || target < nums[i+1]) {
+                       return false;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     删除排序链表中的重复元素 II:https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list-ii/
+     给定一个排序链表，删除所有含有重复数字的节点，只保留原始链表中 没有重复出现 的数字。
+
+     错误：题意理解错了，所有相同的都要删掉，不能保留一个；这才稍稍有点难度嘛
+     空指针[1,1]：在循环的时候没有对node判空
+     错误[1,1,1,2,3]：没有针对根节点为相同的情况修改
+     错误[1,1,2]:没有赋值最后一个给下一个
+     这道题细节超级多，难怪提交率低
+     * */
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        int tmp = head.val;
+        ListNode node = head;
+        ListNode mHead = null;
+        ListNode pre = null;
+        while (node != null && node.next != null) {
+            if (node.next.val != tmp) {
+                //确定了node不会被删除
+                pre = node;
+                if (mHead == null) {
+                    mHead = pre;
+                }
+            }
+            node = node.next;
+            while (node != null && node.val == tmp) {
+                //删除掉中间的节点
+                node = node.next;
+            }
+            if (pre != null) {
+                pre.next = node;
+            }
+            if (node != null) {
+                tmp = node.val;
+            }
+        }
+        if (node != null && node.next == null && mHead == null) {
+            mHead = node;
+        }
+        return mHead;
+    }
+
 }
