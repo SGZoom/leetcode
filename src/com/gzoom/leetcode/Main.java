@@ -1083,4 +1083,56 @@ public class Main {
         return mHead;
     }
 
+    /**
+     分隔链表:https://leetcode-cn.com/problems/partition-list/
+     给定一个链表和一个特定值 x，对链表进行分隔，使得所有小于 x 的节点都在大于或等于 x 的节点之前。
+
+     你应当保留两个分区中每个节点的初始相对位置。
+     输入: head = 1->4->3->2->5->2, x = 3
+     输出: 1->2->2->4->3->5
+
+     这个相对位置就比较迷了
+     我的想法是遍历，比他小的放一条，大的放一条
+
+     错误：
+     1、死循环：需要将最后一个置0
+     2、顶部判空
+     * */
+    public ListNode partition(ListNode head, int x) {
+        if (head == null) {
+            return head;
+        }
+        Queue<ListNode> queueSmall = new LinkedList<>();
+        Queue<ListNode> queueBig = new LinkedList<>();
+        while (head != null) {
+            if (head.val < x) {
+                queueSmall.add(head);
+            } else {
+                queueBig.add(head);
+            }
+            head = head.next;
+        }
+        ListNode mHead = null;
+        ListNode cur = null;
+        if (queueSmall.size() > 0) {
+            mHead = ((LinkedList<ListNode>) queueSmall).get(0);
+            cur = mHead;
+        }
+        for (ListNode node : queueSmall) {
+            cur.next = node;
+            cur = cur.next;
+        }
+
+        if (mHead == null) {
+            mHead = ((LinkedList<ListNode>) queueBig).get(0);
+            cur = mHead;
+        }
+        for (ListNode node : queueBig) {
+            cur.next = node;
+            cur = cur.next;
+        }
+        cur.next = null;
+        return mHead;
+    }
+
 }
