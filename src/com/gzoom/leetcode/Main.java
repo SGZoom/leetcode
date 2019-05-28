@@ -1135,4 +1135,169 @@ public class Main {
         return mHead;
     }
 
+
+    /**
+     * 四数之和:https://leetcode-cn.com/problems/4sum/
+     * 给定一个包含 n 个整数的数组 nums 和一个目标值 target，判断 nums 中是否存在四个元素 a，b，c 和 d ，使得 a + b + c + d 的值与 target 相等？找出所有满足条件且不重复的四元组。
+
+    错误：1、没有区分开相同的数字
+     2、[1,-2,-5,-4,-3,3,3,5] -11 负数的情况下，我的一个操作：当前和比target大就不继续往下走了；这个不行
+     3、超时
+     */
+    List<FourList> containList = new ArrayList<>();
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (nums.length < 4) {
+            return result;
+        }
+        Arrays.sort(nums);
+        boolean[] use = new boolean[nums.length];
+        handleFourList(nums, target, use, 0, result, new ArrayList<Integer>(), 0,0);
+        return result;
+    }
+
+    private void handleFourList(int[] nums, int target, boolean[] use, int count, List<List<Integer>> result, List<Integer> list, int curAdd,int index) {
+        if (count == 4) {
+            if (curAdd == target) {
+                FourList fourList = new FourList(list);
+                if (containList.contains(fourList)) {
+                    return;
+                }
+                containList.add(fourList);
+                result.add(new ArrayList<>(list));
+            }
+            return;
+        }
+        int tmp = Integer.MIN_VALUE;
+        for (int i = index; i < nums.length; i++) {
+            if (tmp == nums[i] || use[i]) {
+                continue;
+            }
+            tmp = nums[i];
+            use[i] = true;
+            List<Integer> newList = new ArrayList<>(list);
+            newList.add(nums[i]);
+            handleFourList(nums, target, use, count + 1, result, newList, curAdd + nums[i],index+1);
+            use[i] = false;
+        }
+    }
+
+    class FourList extends Object{
+        public FourList(List<Integer> data) {
+            setData(data);
+        }
+        int[] value;
+        public void setData(List<Integer> data) {
+            int length = data.size();
+            value = new int[length];
+            for (int i = 0; i < length; i++) {
+                value[i] = data.get(i);
+            }
+            Arrays.sort(value);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            FourList fourList = (FourList) obj;
+            if (value.length != fourList.value.length) {
+                return false;
+            }
+            for (int i = 0; i < value.length; i++) {
+                if (value[i] != fourList.value[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    /**
+     所以这个算法时间复杂度是？
+     外层ij 就n^2
+     他优化的应该是第三层第四层，否则像我那样直接递归会造成n^4
+
+     * */
+    //Todo:四数之和的答案
+    public List<List<Integer>> fourSum_true(int[] nums, int target) {
+        Arrays.sort(nums);
+        List<List<Integer>> ls = new ArrayList<>();
+        for (int i = 0; i < nums.length - 3; i++) {
+            if (i == 0 || (nums[i] != nums[i - 1])) {
+                for (int j = i + 1; j < nums.length - 2; j++) {
+                    if (j == i + 1 || (j > i + 1 && nums[j] != nums[j - 1])) {
+                        int l = j + 1, r = nums.length - 1, sum = target - nums[j] - nums[i];
+                        while (l < r) {
+                            if (nums[l] + nums[r] == sum) {
+                                ls.add(Arrays.asList(nums[i], nums[j], nums[l], nums[r]));
+                                while (l < r && nums[l] == nums[l + 1]) {
+                                    l++;
+                                }
+                                while (l < r && nums[r] == nums[r - 1]) {
+                                    r--;
+                                }
+                                l++;
+                                r--;
+                            } else if (nums[l] + nums[r] < sum) {
+                                while (l < r && nums[l] == nums[l + 1]) {
+                                    l++;
+                                }
+                                l++;
+                            } else {
+                                while (l < r && nums[r] == nums[r - 1]) {
+                                    r--;
+                                }
+                                r--;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return ls;
+    }
+
+    /**
+     三数之和:https://leetcode-cn.com/problems/3sum/
+     给定一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？找出所有满足条件且不重复的三元组。
+
+     注意：答案中不可以包含重复的三元组。
+
+     思路：先找到第一个数，然后分别在他的左右找和为-c的数字
+
+     * */
+    public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (nums.length < 3) {
+            return result;
+        }
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length - 2; i++) {
+            if (i == 0 || nums[i] != nums[i - 1]) {
+                int sum = 0 - nums[i];
+                int left = i + 1;
+                int right = nums.length - 1;
+                while (left < right) {
+                    if (nums[left] + nums[right] == sum) {
+                        List<Integer> list = new ArrayList<>();
+                        list.add(nums[i]);
+                        list.add(nums[left]);
+                        list.add(nums[right]);
+                        result.add(list);
+                        left++;
+                        while (left < right && nums[left] == nums[left - 1]) {
+                            left++;
+                        }
+                        right --;
+                        while (right > left && nums[right] == nums[right + 1]) {
+                            right--;
+                        }
+                    } else if (nums[left] + nums[right] < sum) {
+                        left++;
+                    } else {
+                        right--;
+                    }
+                }
+            }
+        }
+        return result;
+    }
 }
