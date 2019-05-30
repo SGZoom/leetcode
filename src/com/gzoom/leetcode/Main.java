@@ -8,7 +8,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Main {
     public static void main(String[] args) {
         Main main = new Main();
-        main.test_removeDuplicates();
+        int result = main.rangeBitwiseAnd(2147483646,2147483647);
+        System.out.println(result);
     }
 
     public class ListNode {
@@ -1428,4 +1429,54 @@ public class Main {
 //    }
 
 
+    /**
+     数字范围按位与:https://leetcode-cn.com/problems/bitwise-and-of-numbers-range/
+     给定范围 [m, n]，其中 0 <= m <= n <= 2147483647，返回此范围内所有数字的按位与（包含 m, n 两端点）。
+
+     错误[1,2]:没有《=
+     错误[0,2147483647] :超时
+     [2000,2147483647]超时or错误
+     2147483646
+     2147483647
+     妈呀，最大的不行呀
+
+     2147483647
+     2147483647
+
+     这个最大的陷阱是int.max
+
+     网上的方法：【笔记】当一个数+1时，总会有这么一个规律“某一位后的数字，全部被置为相反数”。举个例子：
+
+     010111 + 1 = 011000，则010111 & 011000 = 010000。那么，x & (x+1) 后几位相反数的“与操作”，结果总为0。
+     所以，当(m,m+1,...n-1,n)进行连续“与操作”时，会按照上述规律被抵消很大一部分，而只剩下n的前缀部分，最后只需将n归位。举个例子：
+
+     m = 5(0101), n = 7 (0111)。不停右移，得到n前缀部分为01，最后归位前缀得res=0100=4
+     int rangeBitwiseAnd(int m, int n) {
+     int offset = 0;
+     for (; m != n; ++offset) {
+     m >>= 1;
+     n >>= 1;
+     }
+     return n << offset;
+     }
+     * */
+    public int rangeBitwiseAnd(int m, int n) {
+        if (m == 0 || n == 0) {
+            return 0;
+        }
+        if (m == n) {
+            return m;
+        }
+        if (m < Integer.MAX_VALUE / 2 && n >= 2 * m) {
+            return 0;
+        }
+        int result = m;
+        if (n == Integer.MAX_VALUE) {
+            n = n - 1;
+        }
+        for (int i = m + 1; i <= n; i++) {
+            result = result & i;
+        }
+        return result;
+    }
 }
