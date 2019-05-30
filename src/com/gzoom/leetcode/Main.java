@@ -1300,4 +1300,132 @@ public class Main {
         }
         return result;
     }
+
+    /**
+     岛屿数量:https://leetcode-cn.com/problems/number-of-islands/
+     给定一个由 '1'（陆地）和 '0'（水）组成的的二维网格，计算岛屿的数量。一个岛被水包围，并且它是通过水平方向或垂直方向上相邻的陆地连接而成的。你可以假设网格的四个边均被水包围。
+
+     也就是四面都要是水
+     一个点属于岛屿标准是四面要么都是水，要么都属于岛屿
+     首先初始化一次，初始化四条边的值
+     首先遍历一遍，找到所有能作为岛屿的点
+     然后再遍历一遍
+
+     想到另外一个方法，就是整体从左上开始往右下走，保存当前状态是否在遍历岛屿
+     应该还有一个：就是找到1的节点的时候，将所有与他相连的都变为0，最后总数加1
+     * */
+//    int result = 0;
+//    public int numIslands(char[][] grid) {
+//        int width = grid.length;
+//        int deep = grid[0].length;
+//        if (width == 0 && deep == 0) {
+//            return 0;
+//        }
+//        updateIsland(0, 0, grid, 0,width,deep);
+//    }
+//
+//    private int updateIsland(int i, int k, char[][] grid, int cur, int width, int deep) {
+//        int result = 0;
+//        if (grid[i][k] == '1') {
+//            //先看看是否是结束
+//            if (findIsIson(i, k, grid, width, deep)) {
+//                result += 1;
+//            } else {
+//                if (i + 1 < width && grid[i + 1][k] == '1') {
+//                    result = updateIsland(i + 1, k, grid, cur, width, deep) > 0 ? 1 : result;
+//                }
+//                if (k + 1 < width && grid[i][k + 1] == '1') {
+//                    result = updateIsland(i, k + 1, grid, cur, width, deep) > 0 ? 1 : result;
+//                }
+//            }
+//            grid[i][k] = '0';
+//        } else {
+//
+//        }
+//    }
+    /**
+     出错： int deep = grid[0].length;可能为空
+     * */
+    public int numIslands(char[][] grid) {
+        int width = grid.length;
+        if (width == 0) {
+            return 0;
+        }
+        int deep = grid[0].length;
+        int result = 0;
+        for (int i = 0; i < width; i++) {
+            for (int k = 0; k < deep; k++) {
+                if (grid[i][k] == '1') {
+                    result++;
+                    searchOneAndDismiss(i,k,grid,width,deep);
+                }
+            }
+        }
+        return result;
+    }
+
+    private void searchOneAndDismiss(int i, int k, char[][] grid, int width, int deep) {
+        if (i < 0 || i >= width || k < 0 || k >= deep) {
+            return;
+        }
+        if (grid[i][k] == '1') {
+            grid[i][k] = '0';
+            searchOneAndDismiss(i - 1, k, grid, width, deep);
+            searchOneAndDismiss(i + 1, k, grid, width, deep);
+            searchOneAndDismiss(i, k - 1, grid, width, deep);
+            searchOneAndDismiss(i, k + 1, grid, width, deep);
+        }
+    }
+
+
+//    public int numIslands(char[][] grid) {
+//        if (grid.length == 0 && grid[0].length == 0) {
+//            return 0;
+//        }
+//        int lie = grid.length;
+//        int deep = grid[0].length;
+//        boolean[][] map = new boolean[lie][deep];
+//        int[][] result = new int[lie][deep];
+//        for (int i = 0; i < lie; i++) {
+//            for (int k = 0; k < deep; k++) {
+//                map[i][k] = findIsIson(map, i, k, grid, lie, deep);
+//                if (map[i][k]) {
+//
+//                }
+//            }
+//        }
+//
+//    }
+
+    private boolean findIsIson(int i, int k, char[][] grid, int lie, int deep) {
+        boolean result = true;
+        if (i + 1 < lie) {
+            if (grid[i + 1][k] == '1') {
+                return false;
+            }
+        }
+        if (k + 1 < deep && grid[i][k + 1] == '1') {
+            return false;
+        }
+        return true;
+    }
+
+//    private boolean findIsIson(int i, int k, char[][] grid, int lie, int deep) {
+//        boolean result = false;
+//        if (i - 1 >= 0 && grid[i - 1][k] == '1') {
+//            return true;
+//        }
+//        if (i + 1 < lie && grid[i + 1][k] != '1') {
+//            return false;
+//        }
+//        if (k - 1 >= 0 && grid[i][k - 1] != '1') {
+//            return false;
+//        }
+//        if (k + 1 < deep && grid[i][k + 1] != '1') {
+//            return false;
+//        }
+//        return true;
+//    }
+
+
 }
