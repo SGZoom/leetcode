@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Main {
     public static void main(String[] args) {
         Main main = new Main();
-        int result = main.rangeBitwiseAnd(2147483646,2147483647);
+        int result = main.lengthOfLongestSubstring("tmmzuxt");
         System.out.println(result);
     }
 
@@ -1476,6 +1476,41 @@ public class Main {
         }
         for (int i = m + 1; i <= n; i++) {
             result = result & i;
+        }
+        return result;
+    }
+
+    /**
+     无重复字符的最长子串 https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
+     给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
+
+     lastIndex应该包括
+     错误："aab" 1->2
+     "nfpdmpi" 4—>5 最后结尾的判断错了
+     tmmzuxt 4—>5  忽略了一个情况，遍历值已经在index之前
+     * */
+    public int lengthOfLongestSubstring(String s) {
+        if (s.length() <= 1) {
+            return s.length();
+        }
+        HashMap<Character, Integer> map = new HashMap<>();
+        int result = 0;
+        int lastIndex = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char tmp = s.charAt(i);
+            if (map.containsKey(tmp) && map.get(tmp) >= lastIndex) {
+                int add = i - lastIndex;
+                result = Math.max(add, result);
+                lastIndex = map.get(tmp) + 1;
+                map.put(tmp, i);
+            } else if(i == s.length() - 1) {
+                result = Math.max(result,i + 1 -lastIndex);
+            } else {
+                map.put(tmp, i);
+            }
+        }
+        if (result == 0) {
+            return s.length();
         }
         return result;
     }
