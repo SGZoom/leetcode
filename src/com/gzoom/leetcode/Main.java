@@ -8,8 +8,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Main {
     public static void main(String[] args) {
         Main main = new Main();
-        int result = main.lengthOfLongestSubstring("tmmzuxt");
-        System.out.println(result);
+//        int result = main.lengthOfLongestSubstring("tmmzuxt");
+//        System.out.println(result);
+        main.test_removeNthFromEnd();
     }
 
     public class ListNode {
@@ -1513,5 +1514,55 @@ public class Main {
             return s.length();
         }
         return result;
+    }
+
+    /**
+     删除链表的倒数第N个节点 https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/
+     给定一个链表，删除链表的倒数第 n 个节点，并且返回链表的头结点。
+
+     使用双指针？
+
+     [1,2]
+     2
+     错误[1,2]
+
+     这里一个亮点就是使用了虚拟头部，避免了头部会被删除的问题
+     * */
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode virtulHead = new ListNode(0);
+        virtulHead.next = head;
+        ListNode slow = virtulHead;
+        ListNode fast = virtulHead;
+        if (n == 0) {
+            return head;
+        }
+        if (head.next == null) {
+            return null;
+        }
+        for (int i = 0; i < n + 1; i++) {
+            fast = fast.next;
+        }
+        if (fast == null) {
+            slow.next = slow.next.next;
+            return virtulHead.next;
+        }
+        while (fast != null) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+        slow.next = slow.next.next;
+        return virtulHead.next;
+    }
+
+    public void test_removeNthFromEnd() {
+        ListNode n1 = new ListNode(1);
+        ListNode n2 = new ListNode(2);
+        n1.next = n2;
+        n2.next = null;
+        ListNode result = removeNthFromEnd(n1,2);
+        while (result != null) {
+            System.out.println(result.val+" ");
+            result = result.next;
+        }
     }
 }
