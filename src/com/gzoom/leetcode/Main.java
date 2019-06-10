@@ -2073,6 +2073,73 @@ public class Main {
         }
     }
 
+    /**
+      螺旋矩阵 2 https://leetcode-cn.com/problems/spiral-matrix-ii/
+     给定一个正整数 n，生成一个包含 1 到 n2 所有元素，且元素按顺时针顺序螺旋排列的正方形矩阵。
+
+     就是上面那个的逆向思路，从外层填充到中间
+     * */
+    public int[][] generateMatrix(int n) {
+        if (n == 0) {
+            return null;
+        }
+        int[][] result = new int[n][n];
+        int top = 0;
+        int left = 0;
+        int right = n - 1;
+        int bottom = n - 1;
+        int cur = 1;
+        while (true) {
+            //提供上下左右四个点
+            cur = inputPoint(left, top, right, bottom, result, cur);
+            left++;
+            right--;
+            top++;
+            bottom--;
+            if (left > right || top > bottom) {
+                break;
+            }
+        }
+        return result;
+
+    }
+
+    private int inputPoint(int left, int top, int right, int bottom, int[][] matrix, int cur) {
+        if (left == right) {
+            if (top == bottom) {
+                matrix[left][top] = cur;
+                cur++;
+                return cur;
+            }
+            for (int i = top; i <= bottom; i++) {
+                matrix[i][left] = cur;
+                cur++;
+            }
+            return cur;
+        } else if (top == bottom) {
+            for (int i = left; i <= right; i++) {
+                matrix[bottom][i] = cur;
+                cur++;
+            }
+            return cur;
+        } else {
+            for (int i = left; i <= right; i++) {
+                matrix[top][i] = cur;
+                cur++;
+            }
+            for (int k = top + 1; k <= bottom; k++) {
+                matrix[k][right] = cur++;
+            }
+            for (int i = right - 1; i >= left; i--) {
+                matrix[bottom][i] = cur++;
+            }
+            for (int k = bottom - 1; k > top; k--) {
+                matrix[k][left] = cur++;
+            }
+            return cur;
+        }
+    }
+
 //    /**
 //     除自身以外数组的乘积:https://leetcode-cn.com/problems/product-of-array-except-self/
 //     给定长度为 n 的整数数组 nums，其中 n > 1，返回输出数组 output ，其中 output[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积。
