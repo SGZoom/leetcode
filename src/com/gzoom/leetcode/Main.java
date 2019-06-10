@@ -10,7 +10,7 @@ public class Main {
         Main main = new Main();
 //        int result = main.lengthOfLongestSubstring("tmmzuxt");
 //        System.out.println(result);
-        main.test_removeNthFromEnd();
+        main.test_spiralOrder();
     }
 
     public class ListNode {
@@ -1565,4 +1565,522 @@ public class Main {
             result = result.next;
         }
     }
+
+    /**
+     搜索旋转排序数组:https://leetcode-cn.com/problems/search-in-rotated-sorted-array/
+     假设按照升序排序的数组在预先未知的某个点上进行了旋转。
+     ( 例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] )。
+     搜索一个给定的目标值，如果数组中存在这个目标值，则返回它的索引，否则返回 -1 。
+     你可以假设数组中不存在重复的元素。
+     你的算法时间复杂度必须是 O(log n) 级别。
+
+     我能想到的还是使用二分查找，只不过在查找的时候需要判断下当前分段是否是排序分段
+     * */
+//    public int search(int[] nums, int target) {
+//        if (nums.length < 1) {
+//            return -1;
+//        }
+//        int length = nums.length;
+//        int index = length/2;
+//        if(nums[index] == target) {
+//            return index;
+//        }
+//        int result = findTargetBinary(nums,0,index-1,target);
+//        if (result == -1) {
+//            return findTargetBinary(nums, index + 1, length - 1, target);
+//        } else {
+//            return result;
+//        }
+//    }
+
+    private int findTargetBinary(int[] nums, int start, int end, int target) {
+        if (start > end) {
+            return -1;
+        } else if (start == end) {
+            if (nums[start] == target) {
+                return start;
+            }
+            return -1;
+        }
+        int index = (start + end) / 2;
+        if (nums[index] == target) {
+            return index;
+        }
+        //顺序数组
+        if (nums[start] < nums[end]) {
+            if (nums[index] < target) {
+                return findTargetBinary(nums, index + 1, end, target);
+            } else {
+                return findTargetBinary(nums, start, index - 1, target);
+            }
+        } else {
+            int result = findTargetBinary(nums, start, index - 1, target);
+            if (result != -1) {
+                return result;
+            } else {
+                return findTargetBinary(nums, index + 1, end, target);
+            }
+        }
+    }
+
+    /**
+     最大正方形:https://leetcode-cn.com/problems/maximal-square/
+     在一个由 0 和 1 组成的二维矩阵内，找到只包含 1 的最大正方形，并返回其面积。
+
+     想到之前做的另外一个岛屿的题，可以仿造？
+     不对，这是正方形，得规定下
+
+     这个算法的问题在于我是用深度优先的，应该用广度优先的
+     或许可以换个思路：
+     找到一个点的时候，先跳跃到他的对角点，然后匹配对角点和起点的距离横竖是否全为1，是则置空0并计数加1
+
+     出错的点：遍历后置0：这样容易吧别的正方形弄掉了
+     * */
+
+    public int maximalSquare(char[][] matrix) {
+        int result = 0;
+        int width = matrix.length;
+        if(width == 0) {
+            return result;
+        }
+        int deep = matrix[0].length;
+        for (int i = 0; i < width; i++) {
+            for (int k = 0; k < deep; k++) {
+                if (matrix[i][k] == '1') {
+                    result = Math.max(result,findMaxQuare(matrix,i,k,width,deep));
+                }
+            }
+        }
+        return result;
+    }
+
+    private int findMaxQuare(char[][] matrix, int i, int k, int width, int deep) {
+        //最大边长
+        int maxLine = Math.min(width-i,deep-k);
+        int result = 1;
+        for (int line = 1; line < maxLine; line++) {
+            if (checkSquare(matrix, i, k, i + line, k + line)) {
+                result = (line + 1) * (line + 1);
+                matrix[i][k] = '0';
+            } else {
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     验证从curI到curK是否都为'1'
+     * */
+    private boolean checkSquare(char[][] matrix, int i, int k, int curI, int curK) {
+        for (int indexI = curI; indexI >= i; indexI--) {
+            if(matrix[indexI][curK] != '1') {
+                return false;
+            }
+        }
+        for (int indexK = curK; indexK >= k; indexK--) {
+            if(matrix[curI][indexK] != '1') {
+                return false;
+            }
+        }
+//        for (int indexI = curI; indexI >=i; indexI--) {
+//            matrix[indexI][curK] = '0';
+//        }
+//        for (int indexK = curK; indexK >= k; indexK--) {
+//            matrix[curI][indexK] = '0';
+//        }
+        return true;
+    }
+
+//    /**
+//     i,k是起点
+//     * */
+//    private int findMaxQuare(char[][] matrix, int i, int k, int width, int deep) {
+//        //最大边长
+//        int maxLine = Math.min(width-i,deep-k);
+//        for (int line = maxLine - 1; line >= 0; line--) {
+//            if (checkAndDismissOne(i, k, i + line, k + line, matrix)) {
+//                return (line + 1) * (line + 1);
+//            }
+//        }
+//        return 1;
+//    }
+//
+//    private boolean checkAndDismissOne(int i, int k, int targetI, int targetK, char[][] matrix) {
+//        if (i > targetI || k > targetK) {
+//            return true;
+//        }
+//        if (matrix[i][k] != '1') {
+//            return false;
+//        }
+//        if (i == targetI && k == targetK) {
+////            matrix[i][k] = '0';
+//            return true;
+//        }
+//        //广度优先
+//
+//        if (checkAndDismissOne(i + 1, k, targetI, targetK, matrix) && checkAndDismissOne(i, k + 1, targetI, targetK, matrix)) {
+//            matrix[i][k] = '0';
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
+
+    public void test_maximalSquare() {
+        char[][] tmp = new char[][]{{'1','0','1','0','0'},{'1','0','1','1','1'},{'1','1','1','1','1'},{'1','0','0','1','0'}};
+        System.out.println(maximalSquare(tmp));
+    }
+
+
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode(int x) {
+            val = x;
+        }
+    }
+
+    /**
+     二叉树的最近公共祖先 https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/
+     给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+
+     百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。
+
+     我的想法是深度优先算法，找到其中一个,然后从这个节点开始往上溯源，找到另外一个节点
+
+     使用广度优先的话，很容易找到同级的，导致错误
+
+     我好像把它复杂化了，可以直接迭代呀
+
+     哥哥还是深度优先把，我在栈的写法上面有问题
+
+     说明:
+
+     所有节点的值都是唯一的。
+     p、q 为不同节点且均存在于给定的二叉树中
+
+
+     * */
+
+//    Stack<TreeNode> stack = new Stack<>();
+//    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+//        stack.push(root);
+//        return lowestCommonAncestor(p,q);
+//    }
+//
+//    private TreeNode lowestCommonAncestor(TreeNode p, TreeNode q) {
+//        TreeNode root = stack.pop();
+//        if (root.val == p.val) {
+//            if (findTreeNode(root, q)) {
+//                return root;
+//            }
+//            if (root.right != null) {
+//                stack.push(root.right);
+//            }
+//            if(root.left != null) {
+//                stack.push(root.left);
+//            }
+//            return lowestCommonAncestor(p,q);
+//        }
+//    }
+
+    TreeNode result = null;
+    TreeNode findOne = null;
+    public TreeNode lowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q) {
+        //处理下根节点相同时的逻辑
+        TreeNode next = null;
+        if (root.val == p.val) {
+            next = q;
+            if (findTreeNode(root, next)) {
+                return root;
+            }
+        } else if (root.val == q.val) {
+            next = p;
+            if (findTreeNode(root, next)) {
+                return root;
+            }
+        }
+        int req = -1;
+        //然后左子树开始查找
+        if (root.left != null) {
+            req = findTreeNodeByCode(root.left, p, q);
+            if (req == 0) {
+                return result;
+            } else if (req == 1) {
+                if (root.right == null) {
+                    return null;
+                }
+                return root;
+            }
+            if (root.right == null) {
+                return null;
+            }
+            if (findTreeNodeByCode(root.right, p, q) != 0) {
+                return null;
+            }
+            return result;
+        }
+
+        if (root.right != null) {
+            req = findTreeNodeByCode(root.right, p, q);
+            if (req == 0) {
+                return result;
+            }
+            return null;
+        }
+        return null;
+    }
+
+    private int findTreeNodeByCode(TreeNode root, TreeNode p, TreeNode q) {
+        if (root.val == p.val) {
+            if (findTreeNode(root, q)) {
+                //两个都找到了
+                result = root;
+                return 0;
+            }
+            findOne = q;
+            //找到一个
+            return 1;
+        }
+        if(root.val == q.val) {
+            if (findTreeNode(root, p)) {
+                result = root;
+                return 0;
+            }
+            findOne = p;
+            return 1;
+        }
+        if (root.left != null) {
+            int req = findTreeNodeByCode(root.left, p, q);
+            if (req == 0) {
+                return 0;
+            } else if (req == 1) {
+                //找到一个,那我们在右子树看看有没有
+                if (root.right == null) {
+                    return 1;
+                } else {
+                    if (findTreeNode(root.right, findOne)) {
+                        result = root;
+                        return 0;
+                    }
+                    return 1;
+                }
+            } else {
+                //左子树没找到
+                if (root.right == null) {
+                    return -1;
+                } else {
+                    return findTreeNodeByCode(root.right, p, q);
+                }
+            }
+        }
+        if (root.right != null) {
+            int req = findTreeNodeByCode(root.right, p, q);
+            if (req == 0) {
+                return 0;
+            } else if (req == 1) {
+                //找到一个,那我们在右子树看看有没有
+                if (root.left == null) {
+                    return 1;
+                } else {
+                    if (findTreeNode(root.left, findOne)) {
+                        result = root;
+                        return 0;
+                    }
+                    return 1;
+                }
+            } else {
+                //右子树没找到
+                if (root.left == null) {
+                    return -1;
+                } else {
+                    return findTreeNodeByCode(root.left, p, q);
+                }
+            }
+        }
+        return -1;
+    }
+
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        TreeNode result = null;
+        TreeNode next = null;
+        Stack<TreeNode> stack = new Stack<>();
+        Stack<TreeNode> useFind = new Stack<>();
+        useFind.push(root);
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            TreeNode cur = stack.pop();
+            if (cur.val == p.val) {
+                next = q;
+                break;
+            } else if (cur.val == q.val) {
+                next = p;
+                break;
+            }
+            if (cur.left != null) {
+                stack.push(cur.left);
+                useFind.push(cur.left);
+            }
+
+            if (cur.right != null) {
+                stack.push(cur.right);
+                useFind.push(cur.right);
+            }
+
+        }
+        if (next == null) {
+            return result;
+        }
+        //首先查找到的这个点的左右节点
+        while (!useFind.isEmpty()) {
+            TreeNode cur = useFind.pop();
+            if (findTreeNode(cur, next)) {
+                return cur;
+            }
+        }
+        return result;
+    }
+//
+    private boolean findTreeNode(TreeNode cur, TreeNode next) {
+        if (cur == null) {
+            return false;
+        }
+        if (cur.val == next.val) {
+            return true;
+        }
+        return findTreeNode(cur.left,next) || findTreeNode(cur.right,next);
+    }
+//
+    public void test_lowestCommonAncestor() {
+        TreeNode root = new TreeNode(3);
+        TreeNode left = new TreeNode(5);
+        TreeNode right = new TreeNode(1);
+        root.left = left;
+        root.right = right;
+        left.left = null;
+        left.right = null;
+        right.left = null;
+        right.right = null;
+        System.out.println(lowestCommonAncestor2(root,left,right).val);
+    }
+
+    /**
+     我上面的写法比较繁杂，其实这算是理想题，没有不存在的情况，那么我们可以稍微简化一点
+
+     * */
+    public TreeNode lowestCommonAncestor_true(TreeNode root, TreeNode p, TreeNode q) {
+        // LCA 问题
+        if (root == null) {
+            return root;
+        }
+        if (root == p || root == q) {
+            return root;
+        }
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        if (left != null && right != null) {
+            return root;
+        } else if (left != null) {
+            return left;
+        } else if (right != null) {
+            return right;
+        }
+        return null;
+    }
+
+
+    /**
+     螺旋矩阵 https://leetcode-cn.com/problems/spiral-matrix/
+     给定一个包含 m x n 个元素的矩阵（m 行, n 列），请按照顺时针螺旋顺序，返回矩阵中的所有元素。
+
+     不如把这道题简化成一圈一圈的解析
+
+     错误：
+     1、width和deep弄混了
+     2、
+     * */
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> result = new ArrayList<>();
+        int deep = matrix.length;
+        if (deep <= 0) {
+            return result;
+        }
+        int width = matrix[0].length;
+        //能够遍历多少层
+        int goMax = Math.min(width - 1, deep - 1);
+        int curX = 0;
+        int curY = 0;
+        //一开始的四个点
+        int top = 0;
+        int left = 0;
+        int right = width - 1;
+        int bottom = deep - 1;
+        while (true) {
+            //提供上下左右四个点
+            recordPoint(left, top, right, bottom, result, matrix);
+            left++;
+            right--;
+            top++;
+            bottom--;
+            if (left > right || top > bottom) {
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    private void recordPoint(int left, int top, int right, int bottom, List<Integer> result, int[][] matrix) {
+        if (left == right) {
+            if (top == bottom) {
+                result.add(matrix[left][top]);
+                return;
+            }
+            for (int i = top; i <= bottom; i++) {
+                result.add(matrix[i][left]);
+            }
+            return;
+        } else if (top == bottom) {
+            for (int i = left; i <= right; i++) {
+                result.add(matrix[bottom][i]);
+            }
+            return;
+        } else {
+            for (int i = left; i <= right; i++) {
+                result.add(matrix[top][i]);
+            }
+            for (int k = top + 1; k <= bottom; k++) {
+                result.add(matrix[k][right]);
+            }
+            for (int i = right - 1; i >= left; i--) {
+                result.add(matrix[bottom][i]);
+            }
+            for (int k = bottom - 1; k > top; k--) {
+                result.add(matrix[k][left]);
+            }
+        }
+    }
+
+    public void test_spiralOrder() {
+//        int[][] data = new int[][]{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
+        int[][] data = new int[][]{{1}};
+        List<Integer> result = spiralOrder(data);
+        for (int a : result) {
+            System.out.print(a+" ");
+        }
+    }
+
+//    /**
+//     除自身以外数组的乘积:https://leetcode-cn.com/problems/product-of-array-except-self/
+//     给定长度为 n 的整数数组 nums，其中 n > 1，返回输出数组 output ，其中 output[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积。
+//     说明: 请不要使用除法，且在 O(n) 时间复杂度内完成此题。
+//
+//     这道题比较麻烦的是在常数时间，还不能使用除法？要上天
+//     * */
+//    public int[] productExceptSelf(int[] nums) {
+//
+//    }
 }
