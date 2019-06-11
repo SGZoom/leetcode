@@ -10,7 +10,9 @@ public class Main {
         Main main = new Main();
 //        int result = main.lengthOfLongestSubstring("tmmzuxt");
 //        System.out.println(result);
-        main.test_spiralOrder();
+//        main.test_spiralOrder();
+        System.out.println(2%5);
+        System.out.println(13%5);
     }
 
     public class ListNode {
@@ -2139,6 +2141,87 @@ public class Main {
             return cur;
         }
     }
+
+    /**
+     旋转链表 https://leetcode-cn.com/problems/rotate-list/
+     给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
+
+    我有个想法，使用k进行循环定位，保留尾节点，然后找到目标节点，保留目标节点的上一个节点（这里可能为空）
+     然后进行断的操作
+
+
+     错误：[1,2] 1 我的输出是2,1
+     我的思路错了，从头开始数是向左移动
+     还有一种做法,使用快慢节点
+     还有一种比较好理解，就是使用队列
+    反正也没有限制，还是用链表吧
+
+     过了
+     但是还有一种思路，就是遍历，然后得到长度
+     然后头尾相连，然后整个环形移动
+     虽然不觉得这种做法比我好到哪里
+
+     * */
+    public ListNode rotateRightV2(ListNode head, int k) {
+        if (k == 0 || head == null || head.next == null) {
+            return head;
+        }
+        List<ListNode> list = new ArrayList<>();
+        ListNode cur = head;
+        while (cur != null) {
+            list.add(cur);
+            cur = cur.next;
+        }
+        int length = list.size();
+        int move = k % length;
+        if (move == 0) {
+            return head;
+        }
+        ListNode newHead = list.get(length - move);
+        list.get(length-1).next = list.get(0);
+        list.get(length - move -1).next = null;
+        return newHead;
+    }
+
+    public ListNode rotateRight(ListNode head, int k) {
+        if (k == 0 || head == null || head.next == null) {
+            return head;
+        }
+        ListNode cur = head;
+        ListNode tail = null;
+        ListNode last = null;
+        while (k > 0) {
+            last = cur;
+            cur = cur.next;
+            if (cur == null) {
+                //找到尾巴
+                tail = last;
+                cur = head;
+            }
+            k--;
+        }
+        ListNode newHead = cur;
+        if (tail == null) {
+            while (cur != null) {
+                if (cur.next == null) {
+                    tail = cur;
+                    break;
+                }
+                cur = cur.next;
+            }
+        }
+        //找到的还是原来的
+        if (newHead == head) {
+            return newHead;
+        } else {
+            last.next = null;
+            tail.next = head;
+            return newHead;
+        }
+
+    }
+
+
 
 //    /**
 //     除自身以外数组的乘积:https://leetcode-cn.com/problems/product-of-array-except-self/
