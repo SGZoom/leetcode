@@ -10,9 +10,9 @@ public class Main {
         Main main = new Main();
 //        int result = main.lengthOfLongestSubstring("tmmzuxt");
 //        System.out.println(result);
-//        main.test_spiralOrder();
-        System.out.println(2%5);
-        System.out.println(13%5);
+        main.test_rotate();
+//        System.out.println(2%5);
+//        System.out.println(13%5);
     }
 
     public class ListNode {
@@ -2223,14 +2223,100 @@ public class Main {
 
 
 
-//    /**
-//     除自身以外数组的乘积:https://leetcode-cn.com/problems/product-of-array-except-self/
-//     给定长度为 n 的整数数组 nums，其中 n > 1，返回输出数组 output ，其中 output[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积。
-//     说明: 请不要使用除法，且在 O(n) 时间复杂度内完成此题。
-//
-//     这道题比较麻烦的是在常数时间，还不能使用除法？要上天
-//     * */
-//    public int[] productExceptSelf(int[] nums) {
-//
-//    }
+    /**
+     除自身以外数组的乘积:https://leetcode-cn.com/problems/product-of-array-except-self/
+     给定长度为 n 的整数数组 nums，其中 n > 1，返回输出数组 output ，其中 output[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积。
+     说明: 请不要使用除法，且在 O(n) 时间复杂度内完成此题。
+
+     这道题比较麻烦的是在常数时间，还不能使用除法？要上天
+     想到一个方法，a[i]表示i-1前面的乘机，b[i]表示i+1之后的乘机
+     结果c[i] = a[i]*b[i]
+     这里我多了一个循环，其实可以不要的，最后从右往左循环的时候再来一次就行了
+
+     
+     * */
+    public int[] productExceptSelf(int[] nums) {
+        int length = nums.length;
+        int a[] = new int[length];
+        int b[] = new int[length];
+        a[0] = 1;
+        for (int i = 1; i < length; i++) {
+            a[i] = a[i-1] * nums[i-1];
+        }
+        b[length-1] = 1;
+        for (int i = length - 2; i >= 0; i--) {
+            b[i] = b[i+1] * nums[i+1];
+        }
+        for (int i = 0; i < length; i++) {
+            nums[i] = b[i] * a[i];
+        }
+        return nums;
+    }
+
+    public void test_productExceptSelf() {
+        int[] res = productExceptSelf(new int[]{1,2,3,4});
+        for(int a : res) {
+            System.out.println(a);
+        }
+    }
+
+
+    /**
+     旋转图像 https://leetcode-cn.com/problems/rotate-image/
+     给定一个 n × n 的二维矩阵表示一个图像。
+
+     将图像顺时针旋转 90 度。
+
+     说明：
+
+     你必须在原地旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要使用另一个矩阵来旋转图
+
+     来源：力扣（LeetCode）
+     链接：https://leetcode-cn.com/problems/rotate-image
+
+     需要原地旋转，又不给我创造矩阵，那就一个个单元转呗
+     突然脑子转不过来，不知道怎么做四点旋转
+
+     错误[[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
+
+     突然觉得自己秀逗了，直接打印不好吗？
+     * */
+    public void rotate(int[][] matrix) {
+        int n = matrix.length;
+        if (n == 0 || n == 1) {
+            return;
+        }
+        int left = 0,right = n-1,top = 0,bottom = n-1;
+        while (left <= right) {
+            handleMatrixRotate(matrix,left,top,right,bottom);
+            left++;
+            right--;
+            top++;
+            bottom--;
+        }
+    }
+
+    private void handleMatrixRotate(int[][] matrix, int left, int top, int right, int bottom) {
+        int tmp;
+        //应该是只走一步的时候有问题
+        for (int i = 0; i < right-left; i++) {
+            tmp = matrix[top + i][right];
+            matrix[top + i][right] = matrix[top][left+i];
+            matrix[top][left + i] = matrix[bottom-i][left];
+            matrix[bottom-i][left] = matrix[bottom][right-i];
+            matrix[bottom][right-i] = tmp;
+        }
+    }
+
+    public void test_rotate() {
+        int[][] data = new int[][]{{5, 1, 9, 11}, {2, 4, 8, 10}, {13, 3, 6, 7}, {15, 14, 12, 16}};
+        rotate(data);
+        for (int i = 0; i < 4; i++) {
+            for (int k = 0; k < 4; k++) {
+                System.out.print(data[i][k]+" ");
+            }
+            System.out.println();
+        }
+
+    }
 }
