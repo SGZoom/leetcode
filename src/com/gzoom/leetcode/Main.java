@@ -2354,4 +2354,45 @@ public class Main {
         }
         return maxLength;
     }
+
+
+    /**
+     搜索二维矩阵 II
+     https://leetcode-cn.com/problems/search-a-2d-matrix-ii/
+
+     编写一个高效的算法来搜索 m x n 矩阵 matrix 中的一个目标值 target。该矩阵具有以下特性：
+
+     每行的元素从左到右升序排列。
+     每列的元素从上到下升序排列。
+
+     这道题貌似做过咧，从右上角开始就行了
+     如果大，那么就没必要往下走了，往左走就行了
+     * */
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int deep = matrix.length;
+        if (deep == 0) {
+            return false;
+        }
+        int width = matrix[0].length;
+        int x = 0;
+        int y = width - 1;
+        while (x < deep && y >= 0) {
+            //一开始的时候没有考虑越界
+            if (matrix[x][y] == target) {
+                return true;
+            }
+            if (matrix[x][y] > target) {
+                if (y == 0) {
+                    return false;
+                }
+                y--;
+            } else {
+                if (x == deep - 1) {
+                    return false;
+                }
+                x++;
+            }
+        }
+        return false;
+    }
 }
