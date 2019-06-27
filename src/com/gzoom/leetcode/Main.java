@@ -2279,7 +2279,7 @@ public class Main {
 
      错误[[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
 
-     突然觉得自己秀逗了，直接打印不好吗？
+     突然觉得自己秀逗了，直接打印不好吗？不好，就是不能直接打印
      * */
     public void rotate(int[][] matrix) {
         int n = matrix.length;
@@ -2317,6 +2317,41 @@ public class Main {
             }
             System.out.println();
         }
+    }
 
+    /**
+     长度最小的子数组
+     给定一个含有 n 个正整数的数组和一个正整数 s ，找出该数组中满足其和 ≥ s 的长度最小的连续子数组。如果不存在符合条件的连续子数组，返回 0。
+      https://leetcode-cn.com/problems/minimum-size-subarray-sum/
+
+
+     一开始看题目还感觉有点绕
+
+     维护一个start和end，end进行叠加，如果和大于s的话就尝试将start回退
+
+     这道题不难解，问题是如何优化
+     这个有空在看吧，不想玩
+     * */
+    public int minSubArrayLen(int s, int[] nums) {
+        int start = 0,end = 0;
+        int length = nums.length;
+        int maxLength = length + 1;
+        int curSum = 0;
+        for (; end < length; end++) {
+            curSum += nums[end];
+            if (curSum >= s) {
+                maxLength = Math.min((end-start+1),maxLength);
+            }
+            //可以前推的情况
+            while (curSum >= s && curSum-nums[start] >= s && start <= end) {
+                curSum -= nums[start];
+                start++;
+                maxLength = Math.min((end-start+1),maxLength);
+            }
+        }
+        if (maxLength == length + 1) {
+            return 0;
+        }
+        return maxLength;
     }
 }
