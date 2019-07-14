@@ -2395,4 +2395,48 @@ public class Main {
         }
         return false;
     }
+
+
+
+    //-----------midle的要收钱了，这里开始尝试hard的
+    /**
+     https://leetcode-cn.com/problems/merge-k-sorted-lists/
+     合并K个排序链表
+     合并 k 个排序链表，返回合并后的排序链表。请分析和描述算法的复杂度。
+
+     想了一下，想做平行的比较，使用k个指针进行定位
+     在几个链表差不多长的时候，n，这种时间算法就是k*n
+     这种想法应该是比较初级的，想看看高级的算法是如何
+     * */
+//    public ListNode mergeKLists(ListNode[] lists) {
+//        int length = lists.length;
+//        ListNode[] indexs = new ListNode[length];
+//        ListNode head = new ListNode(0);
+//        ListNode cur = head;
+//        ListNode tmp = null;
+//        while (true) {
+//            for (int i = 0; i < length; i++) {
+//                if (tmp == null) {
+//                    tmp = lists[i];
+//                } else if (lists[i] != null && tmp.val < lists[i].val) {
+//                    tmp = lists[i];
+//                }
+//            }
+//            if (tmp == null) {
+//                break;
+//            }
+//
+//        }
+//    }
+
+    /**
+     https://leetcode-cn.com/problems/set-matrix-zeroes/
+     给定一个 m x n 的矩阵，如果一个元素为 0，则将其所在行和列的所有元素都设为 0。请使用原地算法。
+     * */
+    public void setZeroes(int[][] matrix) {
+
+    }
+
+
+
 }
