@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-08-24T14:41:33.186Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36" etag="AeizJyNsKVAl3h4o7bbX" version="14.9.8" type="github">
+<mxfile host="app.diagrams.net" modified="2021-08-24T14:41:44.565Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36" etag="YNffMighowkGIbK53Y8D" version="14.9.8" type="github">
   <diagram id="rZBvVixIBVX9mQDeIi11" name="Page-1">
     <mxGraphModel dx="1426" dy="676" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -35,16 +35,16 @@
           <mxGeometry x="350" y="480" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="YsgePVBSbrA1ZEnd1T59-6" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="318" y="585" width="520" height="110" as="geometry" />
+          <mxGeometry x="320" y="580" width="520" height="110" as="geometry" />
         </mxCell>
         <mxCell id="YsgePVBSbrA1ZEnd1T59-7" value="数据合并" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="332" y="595" width="98" height="20" as="geometry" />
+          <mxGeometry x="334" y="590" width="98" height="20" as="geometry" />
         </mxCell>
         <mxCell id="YsgePVBSbrA1ZEnd1T59-8" value="合并节顶信息" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="487" y="625" width="120" height="60" as="geometry" />
+          <mxGeometry x="489" y="620" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="YsgePVBSbrA1ZEnd1T59-9" value="合并一级赛况消息" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="617" y="625" width="120" height="60" as="geometry" />
+          <mxGeometry x="619" y="620" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="YsgePVBSbrA1ZEnd1T59-10" value="" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="325" y="720" width="520" height="110" as="geometry" />
@@ -59,7 +59,7 @@
           <mxGeometry x="487" y="760" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="YsgePVBSbrA1ZEnd1T59-14" value="查找曝光数据，合并置顶赛况" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="354" y="625" width="120" height="60" as="geometry" />
+          <mxGeometry x="356" y="620" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
